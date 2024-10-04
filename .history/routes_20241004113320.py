@@ -8,25 +8,12 @@ from utils import check_file_exists, predicted_causes_file
 from models.prediction_model import get_visualization_data
 
 # Load file csv
-# Đường dẫn file CSV
 csv_file_path = os.path.join(os.path.dirname(__file__), 'climate_data.csv')
-
-# Hàm đọc dữ liệu theo khối (chunking)
-def read_data_in_chunks(file_path, chunk_size=1000):
-    for chunk in pd.read_csv(file_path, chunksize=chunk_size):
-        yield chunk
-
-# Hàm ghép tất cả các khối dữ liệu lại thành một dataframe
-def get_all_data(file_path):
-    data = pd.DataFrame()
-    for chunk in read_data_in_chunks(file_path):
-        data = pd.concat([data, chunk], ignore_index=True)
-    return data
 
 #------------------------------Load Template----------------------------------------------------------------------->
 
 def setup_routes(app):
-    # Trang index
+    # Giao diện 
     @app.route('/')
     def index():
         return render_template('index.html')
@@ -36,7 +23,7 @@ def setup_routes(app):
     @app.route('/chart-data', methods=['GET'])
     def chart_data():
         if check_file_exists(csv_file_path):
-            climate_data = get_all_data(csv_file_path)
+            climate_data = pd.read_csv(csv_file_path)
             chart_data = get_visualization_data(climate_data)
             return jsonify(chart_data)
         else:
@@ -54,15 +41,19 @@ def setup_routes(app):
 
     @app.route('/train-predictions', methods=['POST'])
     def train_predictions():
-        if not check_file_exists(predicted_causes_file):
+        year = request.args.get('year', default=2050, type=int)
+
+        # Kiểm tra sự tồn tại của file chứa dữ liệu nguyên nhân đã dự đoán
+        if not check_file_exists(csv_file_path):
             return jsonify({'error': 'Predicted causes file not found. Please run /train-causes first.'}), 401
 
-        predicted_data = train_and_predict_with_predicted_causes(predicted_causes_file)
+        # Thực hiện dự đoán sea_level_rise
+        predicted_data = train_and_predict_with_predicted_causes(csv_file_path)
 
         if predicted_data is None:
             return jsonify({'error': 'Model not trained yet. Please train the model first.'}), 402
 
-        # Trả về dữ liệu vẽ biểu đồ
+        # Trả lại dữ liệu để vẽ biểu đồ
         chart_data = get_visualization_data(predicted_data)
         return jsonify(chart_data)
     
