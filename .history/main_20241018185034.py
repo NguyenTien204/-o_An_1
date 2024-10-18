@@ -1,4 +1,5 @@
 from flask import Flask
+from routes import setup_routes
 
 app = Flask(__name__)
 app.secret_key = '1234'
@@ -8,5 +9,5 @@ def setup_routes():
     setup_routes(app)
 
 if __name__ == '__main__':
-    setup_routes()  # Gọi hàm để thiết lập route trước khi chạy server
+    setup_routes(app)  # Gọi hàm để thiết lập route trước khi chạy server
     app.run(debug=True)

@@ -21,7 +21,7 @@ def predict_single_year(year, model, predicted_data, feature_columns, cause_colu
 def predict_causes(csv_file_path, target_year):
     # Đọc dữ liệu từ file CSV
     climate_data = pd.read_csv(csv_file_path)
-#========================================Chỗ cần thay đổi khi thêm dữ liệu========================================
+#=================================================================================================================
     # Các biến nguyên nhân cần dự đoán
     cause_columns = ['co2_emissions', 'forest_cover', 'global_temperature', 'polar_ice_melt', 'climate_impact']
     

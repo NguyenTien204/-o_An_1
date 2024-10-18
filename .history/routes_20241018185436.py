@@ -4,7 +4,7 @@ import numpy as np
 from flask import jsonify, render_template, request, session
 from models.causal_model import predict_causes
 from models.prediction_model import train_and_predict_with_predicted_causes
-from utils import check_file_exists, predicted_causes_file, climate_data_file
+from utils import check_file_exists, predicted_causes_file
 from models.prediction_model import get_visualization_data
 from main import app
 
@@ -50,7 +50,7 @@ def setup_routes(app):
         year = request.args.get('year', default=2050, type=int)
         session['year'] = year
         predict_causes(csv_file_path, year)
-        return jsonify({'status': f'Cause variables predicted and saved successfully for year {year}'})
+        return jsonify({'status': f'Cause variables predicted and saved successfully for year {year}'}), year
         
     
 #------------------------------Dự đoán tác động của biến đổi khí hậu----------------------------------------------->
@@ -60,8 +60,7 @@ def setup_routes(app):
         if not check_file_exists(predicted_causes_file):
             return jsonify({'error': 'Predicted causes file not found. Please run /train-causes first.'}), 401
 
-        year = session.get('year')
-        predicted_data = train_and_predict_with_predicted_causes(climate_data_file, year )
+        predicted_data = train_and_predict_with_predicted_causes(predicted_causes_file, year )
 
         if predicted_data is None:
             return jsonify({'error': 'Model not trained yet. Please train the model first.'}), 402

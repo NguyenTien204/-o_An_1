@@ -61,7 +61,7 @@ def setup_routes(app):
             return jsonify({'error': 'Predicted causes file not found. Please run /train-causes first.'}), 401
 
         year = session.get('year')
-        predicted_data = train_and_predict_with_predicted_causes(climate_data_file, year )
+        predicted_data = train_and_predict_with_predicted_causes(predicted_causes_file, year )
 
         if predicted_data is None:
             return jsonify({'error': 'Model not trained yet. Please train the model first.'}), 402

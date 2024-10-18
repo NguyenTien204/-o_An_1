@@ -6,7 +6,6 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
 data_dir = os.path.join(BASE_DIR, 'data') 
 predicted_causes_file = os.path.join(data_dir, 'predicted_causes.csv')  
-climate_data_file = os.path.join(data_dir, 'climate_data.csv')
 print(BASE_DIR)
 if not os.path.exists(data_dir):
     os.makedirs(data_dir)
