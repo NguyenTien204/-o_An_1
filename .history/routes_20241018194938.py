@@ -4,13 +4,13 @@ import numpy as np
 from flask import jsonify, render_template, request, session
 from models.causal_model import predict_causes
 from models.prediction_model import train_and_predict_with_predicted_causes
-from utils import check_file_exists, predicted_causes_file, data_dir
+from utils import check_file_exists, predicted_causes_file, climate_data_file
 from models.prediction_model import get_visualization_data
 from main import app
 
 # Load file csv
 # Đường dẫn file CSV
-csv_file_path =  os.path.join(data_dir, 'climate_data.csv')
+csv_file_path = os.path.join(os.path.dirname(__file__), 'climate_data.csv')
 
 # Hàm đọc dữ liệu theo khối (chunking)
 def read_data_in_chunks(file_path, chunk_size=1000):
