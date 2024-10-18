@@ -25,27 +25,12 @@ def train_and_predict_with_predicted_causes(csv_file):
 
     if model is None:
         return None 
-def train_and_predict_with_predicted_causes(csv_file):
-    predicted_data = pd.read_csv(csv_file)
-
-    if 'sea_level_rise' not in predicted_data.columns:
-        predicted_data['sea_level_rise'] = None
-
-    # Tải mô hình đã huấn luyện
-    model = load_model('climate_change_impact_model.pkl')
-
-    if model is None:
-        return None
-
-    # Biến đầu vào mà mô hình đã huấn luyện
-    feature_columns = ['global_temperature', 'forest_cover', 'co2_emissions', 'climate_impact']
-
-    # Lặp qua từng hàng và cập nhật các biến nguyên nhân dựa trên dự đoán của năm trước
+    variables_to_predict = ['sea_level_rise'] #thêm các biến đích vào đây  
+        # Lặp qua từng năm và sử dụng dữ liệu đã dự đoán cho các biến đầu vào
     for index, row in predicted_data.iterrows():
         if pd.isnull(row['sea_level_rise']):  # Chỉ dự đoán nếu chưa có giá trị
-            # Lấy các biến đầu vào cho năm hiện tại và in ra để kiểm tra
-            features = pd.DataFrame([row[feature_columns]], columns=feature_columns)
-            print(f"Year: {row['year']}, Features: {features}")  # In giá trị của các biến đầu vào để kiểm tra
+            # Lấy các biến đầu vào cho năm hiện tại
+            features = row[['global_temperature', 'forest_cover', 'co2_emissions']].values.reshape(1, -1)
 
             # Dự đoán giá trị sea_level_rise với các biến đầu vào của năm hiện tại
             predicted_value = model.predict(features)[0]
@@ -56,6 +41,7 @@ def train_and_predict_with_predicted_causes(csv_file):
     # Lưu lại dữ liệu đã được dự đoán
     predicted_data.to_csv(csv_file, index=False)
     return predicted_data
+
 
 #--------------------------------------------------------------------------------------------------------------------------->
 
@@ -70,13 +56,11 @@ def train_and_predict_with_predicted_causes(csv_file):
 #        predicted_data['sea_level_rise'] = None
 #
 #    start_year = 2020
-#    # Huấn luyện mô hình với cả climate_impact
 #    for year in range(start_year, target_year + 1):
-#        current_year_data = predicted_data[predicted_data['year'] == year][['global_temperature', 'forest_cover', 'co2_emissions', 'climate_impact']].astype(float)
+#        current_year_data = predicted_data[predicted_data['year'] == year][['global_temperature', 'forest_cover', 'co2_emissions']].astype(float)
 #        
 #        if not current_year_data.empty:
-#            # Huấn luyện mô hình với thêm climate_impact
-#            X_train = predicted_data[['global_temperature', 'forest_cover', 'co2_emissions', 'climate_impact']].dropna().astype(float)
+#            X_train = predicted_data[['global_temperature', 'forest_cover', 'co2_emissions']].dropna().astype(float)
 #            y_train = predicted_data['sea_level_rise'].dropna().astype(float)
 #
 #            model = RandomForestRegressor(n_estimators=100, random_state=42)
@@ -90,7 +74,6 @@ def train_and_predict_with_predicted_causes(csv_file):
 #
 #    save_model(model, 'climate_change_impact_model.pkl')  # Lưu model sau khi huấn luyện
 #    return predicted_data
-
 
 #=========================================================================================================================>
 

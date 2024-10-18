@@ -90,8 +90,8 @@ def train_and_predict_with_predicted_causes(csv_file):
 #
 #    save_model(model, 'climate_change_impact_model.pkl')  # Lưu model sau khi huấn luyện
 #    return predicted_data
-
-
+#
+#
 #=========================================================================================================================>
 
 
