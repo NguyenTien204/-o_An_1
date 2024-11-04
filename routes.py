@@ -61,7 +61,7 @@ def setup_routes(app):
             return jsonify({'error': 'Predicted causes file not found. Please run /train-causes first.'}), 401
 
         year = session.get('year')
-        predicted_data = train_and_predict_with_predicted_causes(predicted_causes_file)
+        predicted_data = train_and_predict_with_predicted_causes(csv_file_path,predicted_causes_file,year)
 
         if predicted_data is None:
             return jsonify({'error': 'Model not trained yet. Please train the model first.'}), 402
@@ -84,12 +84,12 @@ def setup_routes(app):
         # Chuẩn bị dữ liệu để vẽ biểu đồ cho từng cột
         chart_data = {
             'years': predicted_data['year'].tolist(),
-            'global_temperature': predicted_data['global_temperature'].replace({np.nan: None}).tolist(),
-            'co2_emissions': predicted_data['co2_emissions'].replace({np.nan: None}).tolist(),
-            'polar_ice_melt': predicted_data['polar_ice_melt'].replace({np.nan: None}).tolist(),
-            'forest_cover': predicted_data['forest_cover'].replace({np.nan: None}).tolist(),
-            'climate_impact': predicted_data['climate_impact'].replace({np.nan: None}).tolist(),
-            'sea_level_rise': predicted_data['sea_level_rise'].replace({np.nan: None}).tolist() if 'sea_level_rise' in predicted_data.columns else []
+            'greenhouse gas emissions person': predicted_data['greenhouse gas emissions person'].replace({np.nan: None}).tolist(),
+            'methane emissions person': predicted_data['methane emissions person'].replace({np.nan: None}).tolist(),
+            'nitrous oxide emissions person': predicted_data['nitrous oxide emissions person'].replace({np.nan: None}).tolist(),
+            'Annual CO2 emission': predicted_data['Annual CO2 emission'].replace({np.nan: None}).tolist(),
+            'Annual greenhouse gas emissions': predicted_data['Annual greenhouse gas emissions'].replace({np.nan: None}).tolist(),
+            'Annual nitrous emissions': predicted_data['Annual nitrous emissions'].replace({np.nan: None}).tolist() if 'Annual nitrous emissions' in predicted_data.columns else []
         }
     
         return jsonify(chart_data)

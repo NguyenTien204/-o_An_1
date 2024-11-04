@@ -23,7 +23,7 @@ def predict_causes(csv_file_path, target_year):
     climate_data = pd.read_csv(csv_file_path)
     
     # Các biến nguyên nhân cần dự đoán
-    cause_columns = ['co2_emissions', 'forest_cover', 'global_temperature', 'polar_ice_melt', 'climate_impact']
+    cause_columns = ['greenhouse gas emissions person', 'methane emissions person', 'nitrous oxide emissions person', 'Annual CO2 emission', 'Annual greenhouse gas emissions','Annual nitrous emissions']
     
     # Cột đặc trưng (đặc điểm dựa trên đó để dự đoán)
     feature_columns = ['year']
