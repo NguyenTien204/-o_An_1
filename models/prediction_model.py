@@ -93,12 +93,12 @@ def train_and_predict_with_predicted_causes(csv_file,predicted_file, target_year
             model.fit(X_train, y_train)
 
             # Dự đoán cho từng cột kết quả
-            #for target_col in target_columns:
-            #    predicted_value = model.predict(current_year_data)[0]
-            #    predicted_data.loc[predicted_data['year'] == year, target_col] = predicted_value
+            for target_col in target_columns:
+                predicted_value = model.predict(current_year_data)[0]
+                predicted_data.loc[predicted_data['year'] == year, target_col] = predicted_value
 
     # Lưu lại dữ liệu đã được dự đoán vào CSV
-    #predicted_data.to_csv(csv_file, index=False)
+    predicted_data.to_csv(csv_file, index=False)
 
     # Lưu mô hình đã huấn luyện
     save_model(model, 'climate_change_impact_model.pkl')
