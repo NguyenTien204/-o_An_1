@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from joblib import Parallel, delayed
-from utils import predicted_causes_file, load_model, save_model
+from utils import predicted_causes_file
 
 # =======================Hàm dự đoán các biến nguyên nhân và tạo file predicted_causes.csv với năm được chọn==========================
 
@@ -23,37 +23,20 @@ def predict_causes(csv_file_path, target_year):
     climate_data = pd.read_csv(csv_file_path)
     
     # Các biến nguyên nhân cần dự đoán
-    cause_columns = ['greenhouse gas emissions person', 'methane emissions person', 'nitrous oxide emissions person', 'Annual CO2 emission', 'Annual greenhouse gas emissions','Annual nitrous emissions']
+    cause_columns = ['co2_emissions', 'forest_cover', 'global_temperature', 'polar_ice_melt', 'climate_impact']
     
     # Cột đặc trưng (đặc điểm dựa trên đó để dự đoán)
     feature_columns = ['year']
 
     # Lấy năm cuối cùng từ dữ liệu hiện tại
     last_year = climate_data['year'].max()
-
+    
     # Sao chép dữ liệu hiện tại để dự đoán
     predicted_data = climate_data.copy()
 
-    # Kiểm tra xem model đã được lưu chưa
-    model = load_model('linear_regression_model.pkl')  # Thay thế bằng tên file lưu trữ model của bạn
-    
-    # Nếu model chưa tồn tại, huấn luyện lại và lưu model
-    if model is None:
-        print("No saved model found. Training a new model...")
-        model = LinearRegression()
-        # Huấn luyện mô hình với toàn bộ dữ liệu hiện tại để dự đoán cho tương lai
-        X_train = predicted_data[feature_columns]
-        y_train = predicted_data[cause_columns]
-        model.fit(X_train, y_train)
-        # Lưu mô hình đã huấn luyện
-        save_model(model, 'linear_regression_model.pkl')
-        print("New model trained and saved.")
-    else:
-        print("Loaded saved model.")
-
     # Sử dụng Parallel processing để dự đoán cho các năm từ last_year đến target_year
     results = Parallel(n_jobs=4)(delayed(predict_single_year)(
-        year, model, predicted_data, feature_columns, cause_columns
+        year, LinearRegression(), predicted_data, feature_columns, cause_columns
     ) for year in range(last_year + 1, target_year + 1))
 
     # Thêm các dự đoán vào dữ liệu dự đoán
@@ -65,3 +48,5 @@ def predict_causes(csv_file_path, target_year):
     # Lưu dữ liệu dự đoán vào file predicted_causes.csv
     predicted_data.to_csv(predicted_causes_file, index=False)
     print(f"Predicted cause variables from {last_year} to {target_year} saved to '{predicted_causes_file}'")
+
+# ====================================================================================================================================

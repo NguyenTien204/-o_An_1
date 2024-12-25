@@ -1,16 +1,15 @@
 import os
 import pandas as pd
 import numpy as np
-from flask import jsonify, render_template, request, session
+from flask import jsonify, render_template, request
 from models.causal_model import predict_causes
 from models.prediction_model import train_and_predict_with_predicted_causes
-from utils import check_file_exists, predicted_causes_file, data_dir
+from utils import check_file_exists, predicted_causes_file
 from models.prediction_model import get_visualization_data
-from main import app
 
 # Load file csv
 # Đường dẫn file CSV
-csv_file_path =  os.path.join(data_dir, 'climate_data.csv')
+csv_file_path = os.path.join(os.path.dirname(__file__), 'climate_data.csv')
 
 # Hàm đọc dữ liệu theo khối (chunking)
 def read_data_in_chunks(file_path, chunk_size=1000):
@@ -48,10 +47,8 @@ def setup_routes(app):
     @app.route('/train-causes', methods=['POST'])
     def train_causes():
         year = request.args.get('year', default=2050, type=int)
-        session['year'] = year
         predict_causes(csv_file_path, year)
         return jsonify({'status': f'Cause variables predicted and saved successfully for year {year}'})
-        
     
 #------------------------------Dự đoán tác động của biến đổi khí hậu----------------------------------------------->
 
@@ -59,12 +56,17 @@ def setup_routes(app):
     def train_predictions():
         if not check_file_exists(predicted_causes_file):
             return jsonify({'error': 'Predicted causes file not found. Please run /train-causes first.'}), 401
-
-        year = session.get('year')
-        predicted_data = train_and_predict_with_predicted_causes(csv_file_path,predicted_causes_file,year)
+        
+        predicted_causes_file = request.files['predicted_causes.csv']
+        predicted_data = train_and_predict_with_predicted_causes(predicted_causes_file,target_year)
 
         if predicted_data is None:
             return jsonify({'error': 'Model not trained yet. Please train the model first.'}), 402
+        
+        try:
+            target_year = int(target_year)
+        except ValueError:
+            return jsonify({'error': 'Invalid target_year, it must be an integer'}), 400
 
         # Trả về dữ liệu vẽ biểu đồ
         chart_data = get_visualization_data(predicted_data)
@@ -84,12 +86,12 @@ def setup_routes(app):
         # Chuẩn bị dữ liệu để vẽ biểu đồ cho từng cột
         chart_data = {
             'years': predicted_data['year'].tolist(),
-            'greenhouse gas emissions person': predicted_data['greenhouse gas emissions person'].replace({np.nan: None}).tolist(),
-            'methane emissions person': predicted_data['methane emissions person'].replace({np.nan: None}).tolist(),
-            'nitrous oxide emissions person': predicted_data['nitrous oxide emissions person'].replace({np.nan: None}).tolist(),
-            'Annual CO2 emission': predicted_data['Annual CO2 emission'].replace({np.nan: None}).tolist(),
-            'Annual greenhouse gas emissions': predicted_data['Annual greenhouse gas emissions'].replace({np.nan: None}).tolist(),
-            'Annual nitrous emissions': predicted_data['Annual nitrous emissions'].replace({np.nan: None}).tolist() if 'Annual nitrous emissions' in predicted_data.columns else []
+            'global_temperature': predicted_data['global_temperature'].replace({np.nan: None}).tolist(),
+            'co2_emissions': predicted_data['co2_emissions'].replace({np.nan: None}).tolist(),
+            'polar_ice_melt': predicted_data['polar_ice_melt'].replace({np.nan: None}).tolist(),
+            'forest_cover': predicted_data['forest_cover'].replace({np.nan: None}).tolist(),
+            'climate_impact': predicted_data['climate_impact'].replace({np.nan: None}).tolist(),
+            'sea_level_rise': predicted_data['sea_level_rise'].replace({np.nan: None}).tolist() if 'sea_level_rise' in predicted_data.columns else []
         }
     
         return jsonify(chart_data)
