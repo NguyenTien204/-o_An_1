@@ -1,4 +1,0 @@
-- Chưa phát triển hai tính năng riêng biệt là train model và load model riêng ở cả hai model
-    + Tại prediction_model.py, muốn chuyển từ load model sang train model cần sửa các chỗ sau:
-        - ở file routes.py sửa rount train-predeictions hàm predicted_data sửa tham số predicted_causes_file thành csv_file_path đồng thời thêm tham số year load từ route train-causes
-        - 
