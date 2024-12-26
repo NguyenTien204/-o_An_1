@@ -1,6 +1,0 @@
-- file prediction_model.py sửa dòng 95 - 101: Phần dự đoán chuyển sang dùng data của file predicted_causes.csv. Sửa lại sao cho lưu model trước rồi mới load model để dự đoán sau
-- Kiếm thêm các data khác sao cho có từ khoảng 1850 đến 2020
-- Sửa phần frontEnd ở 2 file js và html
-- Thêm SQL(nếu được)
-- Viết báo cáo!!! Lưu ý: không đạo văn, không văn AI
-- Sửa lại slide: thêm những phần làm được để thuyết trình.
